@@ -267,7 +267,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
 
   void _sortByColumn(int columnIndex) {
     final column = widget.columns[columnIndex];
-    if (column.sortable == false) return;
+    if (column.sortBy == null) return;
 
     setState(() {
       if (_sortColumnIndex == columnIndex) {
@@ -634,7 +634,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
     titleText.layout();
     maxWidth = titleText.width;
 
-    if (column.sortable) {
+    if (column.sortBy != null) {
       // Also include header sort icon + spacing if sortable
       // (~14px icon + 4px gap)
       maxWidth += 18.0;

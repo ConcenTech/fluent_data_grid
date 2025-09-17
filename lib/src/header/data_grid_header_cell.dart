@@ -24,9 +24,11 @@ class DataGridHeaderCell<T> extends StatelessWidget {
 
     return MouseRegion(
       cursor:
-          column.sortable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          column.sortBy != null
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
       child: GestureDetector(
-        onTap: column.sortable ? onSort : null,
+        onTap: column.sortBy != null ? onSort : null,
         child: Container(
           width: width ?? column.width,
           height: 40,
@@ -51,7 +53,7 @@ class DataGridHeaderCell<T> extends StatelessWidget {
                   textAlign: column.textAlign,
                 ),
               ),
-              if (column.sortable) ...[
+              if (column.sortBy != null) ...[
                 const SizedBox(width: 4),
                 Icon(
                   isSorted

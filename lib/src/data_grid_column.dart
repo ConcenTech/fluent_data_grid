@@ -11,9 +11,6 @@ class DataGridColumn<T> {
   /// Note: Auto-width is less performant than fixed width, so prefer fixed widths when possible.
   final double? width;
 
-  /// Whether the column is sortable
-  final bool sortable;
-
   /// Function to extract the display string for this column
   /// Must return a String. If you need custom UI, use `cellBuilder`.
   final String Function(T item) valueBuilder;
@@ -27,9 +24,6 @@ class DataGridColumn<T> {
 
   /// Text alignment for the column
   final TextAlign textAlign;
-
-  /// Whether the column is resizable
-  final bool resizable;
 
   /// Function to filter data by this column
   final bool Function(T item, String filterValue)? filterPredicate;
@@ -52,11 +46,9 @@ class DataGridColumn<T> {
     required this.title,
     this.width,
     required this.valueBuilder,
-    this.sortable = true,
     this.sortBy,
     this.cellBuilder,
     this.textAlign = TextAlign.left,
-    this.resizable = false,
     this.filterPredicate,
     this.filterBuilder,
     this.filterType = FilterType.none,
