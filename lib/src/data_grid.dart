@@ -11,6 +11,7 @@ import 'filter/filter_controls.dart';
 import 'filter/filter_type.dart';
 import 'filter/text_column_filter.dart';
 import 'header/data_grid_header.dart';
+import 'header/loading_data_grid.dart';
 import 'pagination_controls.dart';
 import 'selection_mode.dart';
 
@@ -105,6 +106,15 @@ class DataGrid<T> extends StatefulWidget {
     this.onColumnFiltersChanged,
   });
 
+  /// Builds a DataGrid with a shimmering loading state.
+  static Widget loading({
+    required List<String> columns,
+    int rowCount = 10,
+    Key? key,
+  }) {
+    return LoadingDataGrid(columns: columns, rowCount: rowCount, key: key);
+  }
+
   @override
   State<DataGrid<T>> createState() => _DataGridState<T>();
 }
@@ -133,7 +143,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
       widget.columns.any((column) => column.filterType != FilterType.none);
 
   // Cache for calculated column widths
-  Map<String, double> _calculatedWidths = {};
+  final Map<String, double> _calculatedWidths = {};
 
   // Memoization for sorting
   List<T>? _cachedSortedData;
