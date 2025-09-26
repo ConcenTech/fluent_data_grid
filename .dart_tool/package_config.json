@@ -39,9 +39,9 @@
     },
     {
       "name": "fluent_ui",
-      "rootUri": "file:///Users/kevin/.pub-cache/hosted/pub.dev/fluent_ui-4.12.0",
+      "rootUri": "file:///Users/kevin/.pub-cache/hosted/pub.dev/fluent_ui-4.13.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter",
