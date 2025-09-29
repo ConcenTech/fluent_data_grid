@@ -22,6 +22,7 @@ class DataGridContent<T> extends StatefulWidget {
     required this.onItemTap,
     this.rowBuilder,
     this.getColumnWidth,
+    this.scrollController,
   });
 
   final List<T> data;
@@ -37,6 +38,7 @@ class DataGridContent<T> extends StatefulWidget {
   final ValueChanged<T>? onItemTap;
   final Widget Function(BuildContext context, T item, int index)? rowBuilder;
   final double Function(DataGridColumn<T> column)? getColumnWidth;
+  final ScrollController? scrollController;
 
   @override
   State<DataGridContent<T>> createState() => _DataGridContentState<T>();
@@ -48,29 +50,34 @@ class _DataGridContentState<T> extends State<DataGridContent<T>> {
   @override
   void initState() {
     super.initState();
-    _verticalController = ScrollController();
+    _verticalController = widget.scrollController ?? ScrollController();
   }
 
   @override
   void didUpdateWidget(DataGridContent<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Check if data has changed (not just pagination)
-    if (widget.data != oldWidget.data) {
-      // Scroll to top when data changes
-      if (_verticalController.hasClients) {
-        _verticalController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
+    // Only scroll to top when page changes or data length changes (filtering)
+    // Don't scroll when just selection changes (data object reference changes but length stays same)
+    final shouldScrollToTop =
+        widget.currentPage != oldWidget.currentPage ||
+        widget.data.length != oldWidget.data.length;
+
+    if (shouldScrollToTop && _verticalController.hasClients) {
+      _verticalController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
     }
   }
 
   @override
   void dispose() {
-    _verticalController.dispose();
+    if (widget.scrollController == null) {
+      // Only dispose if we created the controller
+      _verticalController.dispose();
+    }
     super.dispose();
   }
 

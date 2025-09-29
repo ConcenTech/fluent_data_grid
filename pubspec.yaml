@@ -1,6 +1,6 @@
 name: fluent_data_grid
 description: Fluent UI-style DataGrid for Flutter (Windows/macOS)
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/your-org/fluent_data_grid
 publish_to: 'none'
 

@@ -88,6 +88,10 @@ class DataGrid<T> extends StatefulWidget {
   /// This is useful for persisting filter state or reacting to filter changes.
   final ValueChanged<Map<String, String>>? onColumnFiltersChanged;
 
+  /// An optional ScrollController to control the grid's behavior in the
+  /// vertical axis.
+  final ScrollController? scrollController;
+
   const DataGrid({
     super.key,
     required this.data,
@@ -104,6 +108,7 @@ class DataGrid<T> extends StatefulWidget {
     this.onViewChanged,
     this.initialColumnFilters = const {},
     this.onColumnFiltersChanged,
+    this.scrollController,
   });
 
   /// Builds a DataGrid with a shimmering loading state.
@@ -599,6 +604,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
                             onItemTap: _isSelectable ? _toggleSelection : null,
                             rowBuilder: widget.rowBuilder,
                             getColumnWidth: getColumnWidth,
+                            scrollController: widget.scrollController,
                           ),
                         ),
                       ],

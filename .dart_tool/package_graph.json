@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "fluent_data_grid",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "dependencies": [
         "fluent_ui",
         "flutter"
@@ -154,10 +154,11 @@
       "dependencies": []
     },
     {
-      "name": "scroll_pos",
-      "version": "0.5.0",
+      "name": "math_expressions",
+      "version": "2.7.0",
       "dependencies": [
-        "flutter"
+        "petitparser",
+        "vector_math"
       ]
     },
     {
@@ -166,11 +167,10 @@
       "dependencies": []
     },
     {
-      "name": "math_expressions",
-      "version": "2.7.0",
+      "name": "scroll_pos",
+      "version": "0.5.0",
       "dependencies": [
-        "petitparser",
-        "vector_math"
+        "flutter"
       ]
     },
     {
