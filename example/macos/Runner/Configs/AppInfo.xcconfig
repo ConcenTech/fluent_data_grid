@@ -8,7 +8,7 @@
 PRODUCT_NAME = fluent_data_grid_example
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.concentech.fluentDataGridExample
+PRODUCT_BUNDLE_IDENTIFIER = com.example.fluentDataGridExample
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.concentech. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
