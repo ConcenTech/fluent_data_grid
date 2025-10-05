@@ -15,7 +15,31 @@ import 'header/loading_data_grid.dart';
 import 'pagination_controls.dart';
 import 'selection_mode.dart';
 
-/// A Fluent UI-style DataGrid widget for displaying tabular data
+/// A Fluent UI-style DataGrid widget for displaying tabular data.
+/// 
+/// ## Selection Behavior
+/// 
+/// When data is updated (items added/removed/modified), the grid automatically
+/// manages selection state:
+/// 
+/// - **Removed items**: Automatically removed from selection
+/// - **Updated items**: Selection preserved when `itemIdentifier` is provided
+/// - **Select All**: Correctly updates when data changes
+/// 
+/// ### Selection Preservation
+/// 
+/// For generated classes (e.g., Drift) or when object references change:
+/// 
+/// ```dart
+/// DataGrid<Person>(
+///   data: people,
+///   itemIdentifier: (person) => person.id, // Preserve selection by ID
+///   // ...
+/// )
+/// ```
+/// 
+/// Without `itemIdentifier`, only reference equality is used - selection
+/// will be lost when objects are replaced with new instances.
 class DataGrid<T> extends StatefulWidget {
   /// The data to display in the grid
   final List<T> data;
@@ -92,6 +116,18 @@ class DataGrid<T> extends StatefulWidget {
   /// vertical axis.
   final ScrollController? scrollController;
 
+  /// Optional function to extract unique identifier for selection preservation.
+  /// When provided, selection will be preserved across data updates even when
+  /// object references change. Essential for generated classes (e.g., Drift)
+  /// that implement equality based on all fields.
+  ///
+  /// Example: `(person) => person.id`
+  ///
+  /// Performance: Uses O(1) Map lookups when provided, O(n) reference
+  /// equality when null. Only provide if you need selection preservation
+  /// across object updates.
+  final Object Function(T item)? itemIdentifier;
+
   const DataGrid({
     super.key,
     required this.data,
@@ -109,6 +145,7 @@ class DataGrid<T> extends StatefulWidget {
     this.initialColumnFilters = const {},
     this.onColumnFiltersChanged,
     this.scrollController,
+    this.itemIdentifier,
   });
 
   /// Builds a DataGrid with a shimmering loading state.
@@ -246,6 +283,9 @@ class _DataGridState<T> extends State<DataGrid<T>> {
     // Clear calculated widths if data changes
     if (widget.data != oldWidget.data) {
       _calculatedWidths.clear();
+      
+      // Clean up and preserve selected items when data changes
+      _updateSelectionForDataChange(widget.data);
     }
   }
 
@@ -484,6 +524,59 @@ class _DataGridState<T> extends State<DataGrid<T>> {
 
   void _notifyViewChanged() {
     widget.onViewChanged?.call(_getVisibleItems());
+  }
+
+  /// Updates selection when data changes, handling both item removal and updates.
+  /// 
+  /// Uses itemIdentifier for O(1) lookups when provided, falls back to reference
+  /// equality when null. Optimized for performance with early exits and efficient
+  /// Map-based lookups.
+  void _updateSelectionForDataChange(List<T> newData) {
+    final previousSelectedItems = Set.from(_selectedItems);
+    
+    if (widget.itemIdentifier != null) {
+      // Optimized ID-based selection preservation
+      _updateSelectionWithIdentifier(newData);
+    } else {
+      // Fallback to reference equality (fast path)
+      final newDataSet = Set.from(newData);
+      _selectedItems.removeWhere((item) => !newDataSet.contains(item));
+    }
+    
+    // Notify parent if selection changed due to data cleanup/updates
+    if (previousSelectedItems.length != _selectedItems.length || 
+        !previousSelectedItems.containsAll(_selectedItems)) {
+      // Use post-frame callback to avoid calling setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSelectionChanged?.call(_selectedItems.toList());
+      });
+    }
+  }
+
+  /// Optimized ID-based selection update using O(1) Map lookups.
+  void _updateSelectionWithIdentifier(List<T> newData) {
+    final identifier = widget.itemIdentifier!;
+    
+    // Build ID -> item map for new data (single pass, O(n))
+    final newDataById = <Object, T>{};
+    for (final item in newData) {
+      final id = identifier(item);
+      newDataById[id] = item;
+    }
+    
+    // Update selection using ID lookups (O(1) per selected item)
+    final newSelection = <T>{};
+    for (final selectedItem in _selectedItems) {
+      final id = identifier(selectedItem);
+      final matchingNewItem = newDataById[id];
+      if (matchingNewItem != null) {
+        // Item still exists (possibly updated), use the new reference
+        newSelection.add(matchingNewItem);
+      }
+      // Items not in newDataById are automatically removed (cleanup)
+    }
+    
+    _selectedItems = newSelection;
   }
 
   List<T> _getVisibleItems() {
