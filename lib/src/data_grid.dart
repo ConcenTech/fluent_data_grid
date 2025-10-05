@@ -16,20 +16,20 @@ import 'pagination_controls.dart';
 import 'selection_mode.dart';
 
 /// A Fluent UI-style DataGrid widget for displaying tabular data.
-/// 
+///
 /// ## Selection Behavior
-/// 
+///
 /// When data is updated (items added/removed/modified), the grid automatically
 /// manages selection state:
-/// 
+///
 /// - **Removed items**: Automatically removed from selection
 /// - **Updated items**: Selection preserved when `itemIdentifier` is provided
 /// - **Select All**: Correctly updates when data changes
-/// 
+///
 /// ### Selection Preservation
-/// 
+///
 /// For generated classes (e.g., Drift) or when object references change:
-/// 
+///
 /// ```dart
 /// DataGrid<Person>(
 ///   data: people,
@@ -37,7 +37,7 @@ import 'selection_mode.dart';
 ///   // ...
 /// )
 /// ```
-/// 
+///
 /// Without `itemIdentifier`, only reference equality is used - selection
 /// will be lost when objects are replaced with new instances.
 class DataGrid<T> extends StatefulWidget {
@@ -283,7 +283,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
     // Clear calculated widths if data changes
     if (widget.data != oldWidget.data) {
       _calculatedWidths.clear();
-      
+
       // Clean up and preserve selected items when data changes
       _updateSelectionForDataChange(widget.data);
     }
@@ -527,13 +527,13 @@ class _DataGridState<T> extends State<DataGrid<T>> {
   }
 
   /// Updates selection when data changes, handling both item removal and updates.
-  /// 
+  ///
   /// Uses itemIdentifier for O(1) lookups when provided, falls back to reference
   /// equality when null. Optimized for performance with early exits and efficient
   /// Map-based lookups.
   void _updateSelectionForDataChange(List<T> newData) {
     final previousSelectedItems = Set.from(_selectedItems);
-    
+
     if (widget.itemIdentifier != null) {
       // Optimized ID-based selection preservation
       _updateSelectionWithIdentifier(newData);
@@ -542,9 +542,9 @@ class _DataGridState<T> extends State<DataGrid<T>> {
       final newDataSet = Set.from(newData);
       _selectedItems.removeWhere((item) => !newDataSet.contains(item));
     }
-    
+
     // Notify parent if selection changed due to data cleanup/updates
-    if (previousSelectedItems.length != _selectedItems.length || 
+    if (previousSelectedItems.length != _selectedItems.length ||
         !previousSelectedItems.containsAll(_selectedItems)) {
       // Use post-frame callback to avoid calling setState during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -556,14 +556,14 @@ class _DataGridState<T> extends State<DataGrid<T>> {
   /// Optimized ID-based selection update using O(1) Map lookups.
   void _updateSelectionWithIdentifier(List<T> newData) {
     final identifier = widget.itemIdentifier!;
-    
+
     // Build ID -> item map for new data (single pass, O(n))
     final newDataById = <Object, T>{};
     for (final item in newData) {
       final id = identifier(item);
       newDataById[id] = item;
     }
-    
+
     // Update selection using ID lookups (O(1) per selected item)
     final newSelection = <T>{};
     for (final selectedItem in _selectedItems) {
@@ -575,7 +575,7 @@ class _DataGridState<T> extends State<DataGrid<T>> {
       }
       // Items not in newDataById are automatically removed (cleanup)
     }
-    
+
     _selectedItems = newSelection;
   }
 
