@@ -20,7 +20,7 @@ class DropdownColumnFilter<T> extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ComboBox<String>(
-          placeholder: Text('Filter ${column.title}'),
+          placeholder: Text(column.title),
           value: filterValue.isEmpty ? null : filterValue,
           items: [
             // Add clear option at the top
