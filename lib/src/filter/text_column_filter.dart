@@ -19,7 +19,7 @@ class TextColumnFilter<T> extends StatelessWidget {
     return SizedBox(
       width: column.width?.clamp(120, 200) ?? 200,
       child: TextBox(
-        placeholder: 'Filter ${column.title}',
+        placeholder: column.title,
         controller: controller,
         onChanged: onFilterChanged,
         suffix:
