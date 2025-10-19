@@ -24,11 +24,11 @@ class DropdownColumnFilter<T> extends StatelessWidget {
           value: filterValue.isEmpty ? null : filterValue,
           items: [
             // Add clear option at the top
-            if (filterValue.isNotEmpty) ...[
+            if (filterValue.isNotEmpty)
               ComboBoxItem(
                 value: '',
                 child: Text(
-                  'Clear filter',
+                  'Clear',
                   style: TextStyle(
                     color:
                         FluentTheme.of(
@@ -38,19 +38,8 @@ class DropdownColumnFilter<T> extends StatelessWidget {
                   ),
                 ),
               ),
-              // Add separator
-              ComboBoxItem(
-                value: '---',
-                enabled: false,
+            // Add separator
 
-                child: Container(
-                  height: 1,
-                  color:
-                      FluentTheme.of(context).resources.cardStrokeColorDefault,
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                ),
-              ),
-            ],
             // Add actual filter options
             ...column.filterOptions
                     ?.map(
@@ -61,7 +50,6 @@ class DropdownColumnFilter<T> extends StatelessWidget {
                 [],
           ],
           onChanged: (value) {
-            if (value == '---') return; // Ignore separator clicks
             onFilterChanged(value ?? '');
           },
         ),
