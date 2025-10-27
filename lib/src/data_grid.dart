@@ -206,11 +206,15 @@ class _DataGridState<T> extends State<DataGrid<T>> {
   // Memoized controllers
   final Map<String, TextEditingController> _columnFilterControllers = {};
 
+  // Track previous data length to detect in-place mutations
+  int _previousDataLength = 0;
+
   @override
   void initState() {
     super.initState();
     _selectedItems = Set.from(widget.selectedItems);
     _columnFilters = _validateInitialFilters(widget.initialColumnFilters);
+    _previousDataLength = widget.data.length;
     // Notify initial view
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _notifyViewChanged();
@@ -280,13 +284,21 @@ class _DataGridState<T> extends State<DataGrid<T>> {
       _selectedItems = Set.from(widget.selectedItems);
     }
 
-    // Clear calculated widths if data changes
-    if (widget.data != oldWidget.data) {
+    // Check if data changed by comparing reference AND length
+    // Reference check catches new list instances
+    // Length check catches in-place mutations (widget.data == oldWidget.data but different length)
+    bool dataChanged = widget.data != oldWidget.data;
+    bool lengthChanged = _previousDataLength != widget.data.length;
+
+    if (dataChanged || lengthChanged) {
       _calculatedWidths.clear();
 
       // Clean up and preserve selected items when data changes
       _updateSelectionForDataChange(widget.data);
     }
+
+    // Update tracked length
+    _previousDataLength = widget.data.length;
   }
 
   @override
